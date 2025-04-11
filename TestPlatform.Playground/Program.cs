@@ -34,10 +34,11 @@ internal class Program
         // from the environment variables of this project.
 
         var thisAssemblyPath = Assembly.GetEntryAssembly()!.Location;
-        var here = Path.GetDirectoryName(thisAssemblyPath)!;
-        var playground = Path.GetFullPath(Path.Combine(here, "..", "..", "..", ".."));
+        var binDir = Path.GetDirectoryName(thisAssemblyPath)!;
+        var playgroundRoot = Path.GetFullPath(Path.Combine(binDir, "..", "..", ".."));
 
-        var console = Path.Combine(here, "vstest.console", "netfx", "vstest.console.exe");
+        //var console = @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe";
+        var console = "C:/Program Files/dotnet/sdk/9.0.201/vstest.console.dll";
 
         var sourceSettings = $$$"""
             <RunSettings>
@@ -88,8 +89,11 @@ internal class Program
             """;
 
         var sources = new[] {
-            Path.Combine(playground, "bin", "MSTest1", "Debug", "net472", "MSTest1.dll"),
-            Path.Combine(playground, "bin", "MSTest2", "Debug", "net472", "MSTest2.dll"),
+            //@"X:\source\WesternCap\CasePipe.Tests\bin\Debug\net9.0\CasePipe.Tests.dll",
+            //@"X:\source\WesternCap\FunctionalParsers.Tests\bin\Debug\net9.0\FunctionalParsers.Tests.dll"
+            Path.Combine(playgroundRoot, "..", "XUnit.Sample.Tests", "bin", "Debug", "net9.0", "XUnit.Sample.Tests.dll"),
+            Path.Combine(playgroundRoot, "..", "NUnit.Sample.Tests", "bin", "Debug", "net9.0", "NUnit.Sample.Tests.dll"),
+            //Path.Combine(playgroundRoot, "bin", "MSTest2", "Debug", "net472", "MSTest2.dll"),
             // The built in .NET projects don't now work right now in Playground, there is some conflict with Arcade.
             // But if you create one outside of Playground it will work. 
             //Path.Combine(playground, "bin", "MSTest1", "Debug", "net7.0", "MSTest1.dll"),
@@ -132,6 +136,7 @@ internal class Program
         var options = new TestPlatformOptions
         {
             CollectMetrics = true,
+            SkipDefaultAdapters = false
         };
         var r = new VsTestConsoleWrapper(console, consoleOptions);
         var sessionHandler = new TestSessionHandler();
@@ -142,7 +147,7 @@ internal class Program
         var discoveryHandler = new PlaygroundTestDiscoveryHandler(detailedOutput);
         var sw = Stopwatch.StartNew();
         // Discovery
-        r.DiscoverTests(sources, sourceSettings, options, sessionHandler.TestSessionInfo, discoveryHandler);
+        r.DiscoverTests(sources, null, options, sessionHandler.TestSessionInfo, discoveryHandler);
         var discoveryDuration = sw.ElapsedMilliseconds;
         Console.WriteLine($"Discovery done in {discoveryDuration} ms");
         sw.Restart();
