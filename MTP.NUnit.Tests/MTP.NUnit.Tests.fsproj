@@ -5,6 +5,9 @@
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
+
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <EnableNUnitRunner>true</EnableNUnitRunner>
   </PropertyGroup>
 
   <ItemGroup>
