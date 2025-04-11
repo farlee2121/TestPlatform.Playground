@@ -22,16 +22,6 @@ internal class Program
 {
     static void Main()
     {
-        // This project references TranslationLayer, vstest.console, TestHostProvider, testhost and MSTest1 projects, to make sure
-        // we build all the dependencies of that are used to run tests via VSTestConsoleWrapper. It then copies the components from
-        // their original build locations, to $(TargetDir)\netfx\vstest.console directory, and its subfolders to create an executable
-        // copy of TestPlatform that is similar to what we ship.
-        //
-        // The copying might trigger only on re-build, if you see outdated dependencies, Rebuild this project instead of just Build.
-        //
-        // Use this as playground for your debugging of end-to-end scenarios, it will automatically attach vstest.console and teshost
-        // sub-processes. It won't stop at entry-point automatically, don't forget to set your breakpoints, or remove VSTEST_DEBUG_NOBP
-        // from the environment variables of this project.
 
         var thisAssemblyPath = Assembly.GetEntryAssembly()!.Location;
         var binDir = Path.GetDirectoryName(thisAssemblyPath)!;
@@ -40,90 +30,10 @@ internal class Program
         //var console = @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe";
         var console = "C:/Program Files/dotnet/sdk/9.0.201/vstest.console.dll";
 
-        var sourceSettings = $$$"""
-            <RunSettings>
-                <RunConfiguration>
-
-                    <!-- <MaxCpuCount>1</MaxCpuCount> -->
-                    <!-- <DisableParallelization>True<DisableParallelization> -->
-                    <!-- <TargetPlatform>x86</TargetPlatform> -->
-                    <!-- <TargetFrameworkVersion>net472</TargetFrameworkVersion> -->
-
-                    <!-- Per test coverage support -->
-                    <!--
-                    <MaxCpuCount>0</MaxCpuCount>
-                    <ForceOneTestAtTimePerTestHost>True</ForceOneTestAtTimePerTestHost>
-                    <TargetFrameworkTestHostDemultiplexer>4</TargetFrameworkTestHostDemultiplexer>
-                    -->
-
-                    <!-- The settings below are what VS sends by default. -->
-                    <CollectSourceInformation>False</CollectSourceInformation>
-                    <DesignMode>True</DesignMode>
-                </RunConfiguration>
-                <BoostTestInternalSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                    <VSProcessId>999999</VSProcessId>
-                </BoostTestInternalSettings>
-                <GoogleTestAdapterSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                <SolutionSettings>
-                  <Settings />
-                </SolutionSettings>
-                <ProjectSettings />
-                </GoogleTestAdapterSettings>
-
-                <!-- Blame hang -->
-                <!-- <LoggerRunSettings>
-                  <Loggers>
-                    <Logger friendlyName="blame" enabled="True" />
-                  </Loggers>
-                </LoggerRunSettings>
-                <DataCollectionRunSettings>
-                  <DataCollectors>
-                    <DataCollector friendlyName="blame" enabled="True">
-                      <Configuration>
-                        <CollectDumpOnTestSessionHang TestTimeout="10s" HangDumpType="Full" />
-                      </Configuration>
-                    </DataCollector>
-                  </DataCollectors>
-                </DataCollectionRunSettings> -->
-            </RunSettings>
-            """;
-
         var sources = new[] {
-            //@"X:\source\WesternCap\CasePipe.Tests\bin\Debug\net9.0\CasePipe.Tests.dll",
-            //@"X:\source\WesternCap\FunctionalParsers.Tests\bin\Debug\net9.0\FunctionalParsers.Tests.dll"
             Path.Combine(playgroundRoot, "..", "XUnit.Sample.Tests", "bin", "Debug", "net9.0", "XUnit.Sample.Tests.dll"),
             Path.Combine(playgroundRoot, "..", "NUnit.Sample.Tests", "bin", "Debug", "net9.0", "NUnit.Sample.Tests.dll"),
-            //Path.Combine(playgroundRoot, "bin", "MSTest2", "Debug", "net472", "MSTest2.dll"),
-            // The built in .NET projects don't now work right now in Playground, there is some conflict with Arcade.
-            // But if you create one outside of Playground it will work. 
-            //Path.Combine(playground, "bin", "MSTest1", "Debug", "net7.0", "MSTest1.dll"),
         };
-
-        //// Console mode
-        //// Uncomment if providing command line parameters is easier for you
-        //// than converting them to settings, or when you debug command line scenario specifically.
-        //var settingsFile = Path.GetTempFileName();
-        //try
-        //{
-        //    File.WriteAllText(settingsFile, sourceSettings);
-        //    var processStartInfo = new ProcessStartInfo
-        //    {
-        //        FileName = console,
-        //        Arguments = $"{string.Join(" ", sources)} --settings:{settingsFile} --logger:trx;LogFileName=my.trx;WarnOnFileOverwrite=false",
-        //        UseShellExecute = false,
-        //    };
-        //    EnvironmentVariables.Variables.ToList().ForEach(processStartInfo.Environment.Add);
-        //    var process = Process.Start(processStartInfo);
-        //    process.WaitForExit();
-        //    if (process.ExitCode != 0)
-        //    {
-        //        throw new Exception($"Process failed with {process.ExitCode}");
-        //    }
-        //}
-        //finally
-        //{
-        //    try { File.Delete(settingsFile); } catch { }
-        //}
 
         // design mode
         var detailedOutput = true;
@@ -154,7 +64,7 @@ internal class Program
         // Run with test cases and custom testhost launcher
         //r.RunTestsWithCustomTestHost(discoveryHandler.TestCases, sourceSettings, options, sessionHandler.TestSessionInfo, new TestRunHandler(detailedOutput), new DebuggerTestHostLauncher());
         //// Run with test cases and without custom testhost launcher
-        r.RunTests(discoveryHandler.TestCases, sourceSettings, options, sessionHandler.TestSessionInfo, new TestRunHandler(detailedOutput));
+        r.RunTests(discoveryHandler.TestCases, null, options, sessionHandler.TestSessionInfo, new TestRunHandler(detailedOutput));
         //// Run with sources and custom testhost launcher and debugging
         //r.RunTestsWithCustomTestHost(sources, sourceSettings, options, sessionHandler.TestSessionInfo, new TestRunHandler(detailedOutput), new DebuggerTestHostLauncher());
         //// Run with sources
@@ -263,6 +173,12 @@ internal class Program
         public void HandleTestRunComplete(TestRunCompleteEventArgs testRunCompleteArgs, TestRunChangedEventArgs? lastChunkArgs, ICollection<AttachmentSet>? runContextAttachments, ICollection<string>? executorUris)
         {
             Console.WriteLine($"[RUN.COMPLETE]: err: {testRunCompleteArgs.Error}, lastChunk:");
+            var stats = testRunCompleteArgs.TestRunStatistics?.Stats;
+            if (stats != null)
+            {
+                var outcomeDisplay = String.Join("; ", stats.Select(outcome => $"{outcome.Key}: {outcome.Value}"));
+                Console.WriteLine(outcomeDisplay);    
+            }
             if (_detailedOutput)
             {
                 Console.WriteLine(WriteTests(lastChunkArgs?.NewTestResults));
