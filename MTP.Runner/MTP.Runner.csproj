@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <OutputType>Exe</OutputType>
+    <!--<IsTestingPlatformApplication>true</IsTestingPlatformApplication>-->
+    <GenerateProgramFile>false</GenerateProgramFile>
+    <!--<EnableMSTestRunner>true</EnableMSTestRunner>-->
+    <!--<TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>-->
+    <!--<GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>-->
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Testing.Platform" Version="1.6.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="StreamJsonRpc" Version="2.22.3-alpha" />
+
+    <PackageReference Include="MSTest.TestFramework" Version="3.3.1" />
+    <!--<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />-->
+    <!--<PackageReference Include="MSTest.TestAdapter" Version="3.8.3" />-->
+    <!--<PackageReference Include="Microsoft.Testing.Platform.MSBuild" Version="1.6.3" />-->
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter" />
+  </ItemGroup>
+</Project>
