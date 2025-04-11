@@ -17,6 +17,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MTP.Expecto.Tests", "MTP.Ex
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MTP.xUnit.Tests", "MTP.xUnit.Tests\MTP.xUnit.Tests.fsproj", "{A2BC16E9-D710-4579-9477-8876087A2E8E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTP.TUnit.Tests", "MTP.TUnit.Tests\MTP.TUnit.Tests.csproj", "{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,18 @@ Global
 		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Release|x64.Build.0 = Release|Any CPU
 		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Release|x86.ActiveCfg = Release|Any CPU
 		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Release|x86.Build.0 = Release|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Debug|x64.Build.0 = Debug|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Debug|x86.Build.0 = Debug|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Release|x64.ActiveCfg = Release|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Release|x64.Build.0 = Release|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Release|x86.ActiveCfg = Release|Any CPU
+		{C782A38D-DFFF-40F9-A5AD-99FDCC7EBEB5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
