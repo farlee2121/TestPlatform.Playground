@@ -9,6 +9,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "XUnit.Sample.Tests", "XUnit
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NUnit.Sample.Tests", "NUnit.Sample.Tests\NUnit.Sample.Tests.fsproj", "{1EF9C0CC-4356-4158-AB10-F439832048BF}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Expecto.Sample.Tests", "Expecto.Sample.Tests\Expecto.Sample.Tests.fsproj", "{1E8B382E-B144-4B41-B7AF-BF985046DA88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{1EF9C0CC-4356-4158-AB10-F439832048BF}.Release|x64.Build.0 = Release|Any CPU
 		{1EF9C0CC-4356-4158-AB10-F439832048BF}.Release|x86.ActiveCfg = Release|Any CPU
 		{1EF9C0CC-4356-4158-AB10-F439832048BF}.Release|x86.Build.0 = Release|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Debug|x64.Build.0 = Debug|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Debug|x86.Build.0 = Debug|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Release|x64.ActiveCfg = Release|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Release|x64.Build.0 = Release|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Release|x86.ActiveCfg = Release|Any CPU
+		{1E8B382E-B144-4B41-B7AF-BF985046DA88}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
