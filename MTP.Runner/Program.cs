@@ -4,27 +4,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Threading;
 
-using Microsoft.Testing.Platform.Builder;
-using Microsoft.Testing.Platform.Extensions.Messages;
-using Microsoft.Testing.Platform.Extensions.TestFramework;
-using Microsoft.Testing.Platform.Extensions.TestHostControllers;
-using Microsoft.Testing.Platform.Messages;
-
-
-#if NETCOREAPP
 using Microsoft.Testing.Platform.ServerMode.IntegrationTests.Messages.V100;
 using MSTest.Acceptance.IntegrationTests.Messages.V100;
-#endif
-using Microsoft.Testing.Platform.TestHost;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 
 
 namespace Playground;
 
 public class Program
 {
+    class ExecutionStates
+    {
+        public const string Passed = "passed";
+        public const string Discovered = "discovered";
+        public const string Failed = "failed";
+        public const string Skipped = "skipped";
+        public const string TimedOut = "timed-out";
+        public const string Error = "error";
+        public const string Cancelled = "cancelled";
+        public const string InProgress = "in-progress";
+    }
+
     public static async Task<int> Main(string[] args)
     {
         // Opt-out telemetry
@@ -56,7 +57,10 @@ public class Program
         });
         await discoveryResponse.WaitCompletionAsync();
 
-        List<TestNodeUpdate> runResults = new();
+        Console.WriteLine($"Discovery finished: {testNodeUpdates.Count} tests discovered");
+        Console.WriteLine(String.Join(Environment.NewLine, testNodeUpdates.Select(n => n.Node.DisplayName)));
+
+        List <TestNodeUpdate> runResults = new();
         ResponseListener runRequest = await client.RunTestsAsync(Guid.NewGuid(), testNodeUpdates.Select(x => x.Node).ToArray(), node =>
         {
             runResults.AddRange(node);
@@ -64,6 +68,12 @@ public class Program
         });
         await runRequest.WaitCompletionAsync();
 
+
+        var passedCount = runResults.Where(tn => tn.Node.ExecutionState == ExecutionStates.Passed).Count();
+        var failedCount = runResults.Where(tn => tn.Node.ExecutionState == ExecutionStates.Failed).Count();
+        var skippedCount = runResults.Where(tn => tn.Node.ExecutionState == ExecutionStates.Skipped).Count();
+
+        Console.WriteLine($"Passed: {passedCount}; Skipped: {skippedCount}; Failed: {failedCount};");
         await client.ExitAsync();
 
         return 0;
