@@ -5,11 +5,11 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPlatform.Playground", "TestPlatform.Playground\TestPlatform.Playground.csproj", "{E66D3884-2393-493D-BE66-50DF99031F2E}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "XUnit.Sample.Tests", "XUnit.Sample.Tests\XUnit.Sample.Tests.fsproj", "{05B9FDD0-4D72-4B0F-9064-0116057B2CD9}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VSTest.XUnit.Tests", "VSTest.XUnit.Tests\VSTest.XUnit.Tests.fsproj", "{05B9FDD0-4D72-4B0F-9064-0116057B2CD9}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NUnit.Sample.Tests", "NUnit.Sample.Tests\NUnit.Sample.Tests.fsproj", "{1EF9C0CC-4356-4158-AB10-F439832048BF}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VSTest.NUnit.Tests", "VSTest.NUnit.Tests\VSTest.NUnit.Tests.fsproj", "{1EF9C0CC-4356-4158-AB10-F439832048BF}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Expecto.Sample.Tests", "Expecto.Sample.Tests\Expecto.Sample.Tests.fsproj", "{1E8B382E-B144-4B41-B7AF-BF985046DA88}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VSTest.Expecto.Tests", "VSTest.Expecto.Tests\VSTest.Expecto.Tests.fsproj", "{1E8B382E-B144-4B41-B7AF-BF985046DA88}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MTP.NUnit.Tests", "MTP.NUnit.Tests\MTP.NUnit.Tests.fsproj", "{A2AC0C0A-A5E2-4A86-9A56-75FE334925B7}"
 EndProject
