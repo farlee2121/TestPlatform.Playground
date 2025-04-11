@@ -57,7 +57,12 @@ public class Program
         });
         await discoveryResponse.WaitCompletionAsync();
 
-        ResponseListener runRequest = await client.RunTestsAsync(Guid.NewGuid(), testNodeUpdates.Select(x => x.Node).ToArray(), _ => Task.CompletedTask);
+        List<TestNodeUpdate> runResults = new();
+        ResponseListener runRequest = await client.RunTestsAsync(Guid.NewGuid(), testNodeUpdates.Select(x => x.Node).ToArray(), node =>
+        {
+            runResults.AddRange(node);
+            return Task.CompletedTask;
+        });
         await runRequest.WaitCompletionAsync();
 
         await client.ExitAsync();
