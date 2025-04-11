@@ -35,6 +35,7 @@ internal class Program
             Path.Combine(playgroundRoot, "..", "NUnit.Sample.Tests", "bin", "Debug", "net9.0", "NUnit.Sample.Tests.dll"),
             Path.Combine(playgroundRoot, "..", "Expecto.Sample.Tests", "bin", "Debug", "net8.0", "Expecto.Sample.Tests.dll"),
             Path.Combine(playgroundRoot, "..", "MTP.NUnit.Tests", "bin", "Debug", "net9.0", "MTP.NUnit.Tests.dll"),
+            Path.Combine(playgroundRoot, "..", "MTP.xUnit.Tests", "bin", "Debug", "net9.0", "MTP.xUnit.Tests.dll"),
             Path.Combine(playgroundRoot, "..", "MTP.Expecto.Tests", "bin", "Debug", "net8.0", "MTP.Expecto.Tests.dll"),
         };
 

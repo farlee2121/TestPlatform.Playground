@@ -15,6 +15,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MTP.NUnit.Tests", "MTP.NUni
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MTP.Expecto.Tests", "MTP.Expecto.Tests\MTP.Expecto.Tests.fsproj", "{189AA659-8870-4763-BA63-AC2AE95BE78A}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MTP.xUnit.Tests", "MTP.xUnit.Tests\MTP.xUnit.Tests.fsproj", "{A2BC16E9-D710-4579-9477-8876087A2E8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,18 @@ Global
 		{189AA659-8870-4763-BA63-AC2AE95BE78A}.Release|x64.Build.0 = Release|Any CPU
 		{189AA659-8870-4763-BA63-AC2AE95BE78A}.Release|x86.ActiveCfg = Release|Any CPU
 		{189AA659-8870-4763-BA63-AC2AE95BE78A}.Release|x86.Build.0 = Release|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Debug|x64.Build.0 = Debug|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Debug|x86.Build.0 = Debug|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Release|x64.ActiveCfg = Release|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Release|x64.Build.0 = Release|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Release|x86.ActiveCfg = Release|Any CPU
+		{A2BC16E9-D710-4579-9477-8876087A2E8E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
