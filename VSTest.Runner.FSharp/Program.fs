@@ -110,24 +110,24 @@ module Program =
 
             member this.HandleTestRunComplete (testRunCompleteArgs: TestRunCompleteEventArgs, lastChunkArgs: TestRunChangedEventArgs, _runContextAttachments: System.Collections.Generic.ICollection<AttachmentSet>, _executorUris: System.Collections.Generic.ICollection<string>): unit = 
                 Console.WriteLine($"[RUN.COMPLETE]: err: {testRunCompleteArgs.Error}, lastChunk:")
-                if((not << isNull) lastChunkArgs && (not << isNull) lastChunkArgs.NewTestResults) then
-                    this.TestResults.AddRange(lastChunkArgs.NewTestResults)
 
                 if ((not << isNull) testRunCompleteArgs.TestRunStatistics && (not << isNull) testRunCompleteArgs.TestRunStatistics.Stats) then
                     let outcomeDisplay = testRunCompleteArgs.TestRunStatistics.Stats |> Seq.map (fun outcome -> $"{outcome.Key}: {outcome.Value}") |> String.concat "; " 
                     Console.WriteLine(outcomeDisplay);    
                 
-                if (_detailedOutput && (not << isNull) lastChunkArgs && (not << isNull) lastChunkArgs.NewTestResults) then 
-                    Console.WriteLine(Display.WriteTests(lastChunkArgs.NewTestResults |> Seq.map _.TestCase));
+                if((not << isNull) lastChunkArgs && (not << isNull) lastChunkArgs.NewTestResults) then
+                    this.TestResults.AddRange(lastChunkArgs.NewTestResults)
+                    if (_detailedOutput) then 
+                        Console.WriteLine(Display.WriteTests(lastChunkArgs.NewTestResults |> Seq.map _.TestCase));
                 
 
             member this.HandleTestRunStatsChange (testRunChangedArgs: TestRunChangedEventArgs): unit = 
                 if((not << isNull) testRunChangedArgs && (not << isNull) testRunChangedArgs.NewTestResults) then
                     this.TestResults.AddRange(testRunChangedArgs.NewTestResults)
 
-                if (_detailedOutput && (not << isNull) testRunChangedArgs && (not << isNull) testRunChangedArgs.NewTestResults) then 
-                    Console.WriteLine($"[RUN.PROGRESS]");
-                    Console.WriteLine(Display.WriteTests(testRunChangedArgs.NewTestResults |> Seq.map _.TestCase));
+                    if (_detailedOutput) then 
+                        Console.WriteLine($"[RUN.PROGRESS]");
+                        Console.WriteLine(Display.WriteTests(testRunChangedArgs.NewTestResults |> Seq.map _.TestCase));
 
             member _.LaunchProcessWithDebuggerAttached (_testProcessStartInfo: TestProcessStartInfo): int = 
                 raise (System.NotImplementedException())
@@ -139,14 +139,14 @@ module Program =
         let playgroundRoot = __SOURCE_DIRECTORY__
         let sources = [
             Path.Combine(playgroundRoot, "..", "VSTest.XUnit.Tests", "bin", "Debug", "net9.0", "VSTest.XUnit.Tests.dll")
-            //Path.Combine(playgroundRoot, "..", "VSTest.NUnit.Tests", "bin", "Debug", "net9.0", "VSTest.NUnit.Tests.dll"),
-            //Path.Combine(playgroundRoot, "..", "VSTest.Expecto.Tests", "bin", "Debug", "net8.0", "VSTest.Expecto.Tests.dll"),
-            //Path.Combine(playgroundRoot, "..", "MTP.NUnit.Tests", "bin", "Debug", "net9.0", "MTP.NUnit.Tests.dll"),
-            //Path.Combine(playgroundRoot, "..", "MTP.xUnit.Tests", "bin", "Debug", "net9.0", "MTP.xUnit.Tests.dll"),
-            //Path.Combine(playgroundRoot, "..", "MTP.MSTest.Tests", "bin", "Debug", "net9.0", "MTP.MSTest.Tests.dll"),
-            //Path.Combine(playgroundRoot, "..", "MTP.Expecto.Tests", "bin", "Debug", "net8.0", "MTP.Expecto.Tests.dll"),
+            Path.Combine(playgroundRoot, "..", "VSTest.NUnit.Tests", "bin", "Debug", "net9.0", "VSTest.NUnit.Tests.dll")
+            //Path.Combine(playgroundRoot, "..", "VSTest.Expecto.Tests", "bin", "Debug", "net8.0", "VSTest.Expecto.Tests.dll")
+            //Path.Combine(playgroundRoot, "..", "MTP.NUnit.Tests", "bin", "Debug", "net9.0", "MTP.NUnit.Tests.dll")
+            //Path.Combine(playgroundRoot, "..", "MTP.xUnit.Tests", "bin", "Debug", "net9.0", "MTP.xUnit.Tests.dll")
+            //Path.Combine(playgroundRoot, "..", "MTP.MSTest.Tests", "bin", "Debug", "net9.0", "MTP.MSTest.Tests.dll")
+            //Path.Combine(playgroundRoot, "..", "MTP.Expecto.Tests", "bin", "Debug", "net8.0", "MTP.Expecto.Tests.dll")
             //// TUnit not discovered
-            //Path.Combine(playgroundRoot, "..", "MTP.TUnit.Tests", "bin", "Debug", "net8.0", "MTP.TUnit.Tests.dll"),
+            //Path.Combine(playgroundRoot, "..", "MTP.TUnit.Tests", "bin", "Debug", "net8.0", "MTP.TUnit.Tests.dll")
         
             // Path.Combine(sourceDir, "SampleTestProjects/VSTest.XUnit.Tests/bin/Debug/net8.0/VSTest.XUnit.Tests.dll")
             //"X:/source/dotnet/TestPlatform.Playground/VSTest.XUnit.Tests/bin/Debug/net9.0/VSTest.XUnit.Tests.dll"
@@ -182,5 +182,9 @@ module Program =
         discovered |> Seq.map _.FullyQualifiedName |> String.concat Environment.NewLine |> printfn "Discovered: \n\n%s"
 
         sw.Restart()
-        vstest.RunTests(discoveryHandler.DiscoveredTests, null, options, sessionHandler.TestSessionInfo, TestRunHandler(detailedOutput))
+        let runHandler = TestRunHandler(detailedOutput)
+        vstest.RunTests(discoveryHandler.DiscoveredTests, null, options, sessionHandler.TestSessionInfo, runHandler)
+        let testResults = runHandler.TestResults
+        Console.WriteLine($"Run Results: {Newtonsoft.Json.JsonConvert.SerializeObject(testResults)}")
+
         0
