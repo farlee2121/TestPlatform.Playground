@@ -7,6 +7,7 @@ open Microsoft.VisualStudio.TestPlatform.ObjectModel;
 open Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 open Microsoft.VisualStudio.TestPlatform.ObjectModel.Client.Interfaces;
 open Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
+open System.Diagnostics
 
 module Program =
     type TestProjectDll = string 
@@ -94,35 +95,42 @@ module Program =
             member this.HandleStopTestSessionComplete (eventArgs: StopTestSessionCompleteEventArgs): unit = 
                 ()
 
- 
-        
-    let discoverTests (sources: TestProjectDll list) : TestCase ResizeArray = 
-        // let vstestPath = @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
-        // let vstestPath = "C:/Program Files/dotnet/sdk/9.0.300/vstest.console.dll"
-        let vstestPath = "C:/Program Files/dotnet/sdk/9.0.104/vstest.console.dll"
-        let consoleParams = ConsoleParameters()
-        consoleParams.EnvironmentVariables <- [
-              "VSTEST_CONNECTION_TIMEOUT", "999"
-              "VSTEST_DEBUG_NOBP", "1"
-              "VSTEST_RUNNER_DEBUG_ATTACHVS", "0"
-              "VSTEST_HOST_DEBUG_ATTACHVS", "0"
-              "VSTEST_DATACOLLECTOR_DEBUG_ATTACHVS", "0"
-        ] |> dict |> System.Collections.Generic.Dictionary<string, string>
-        consoleParams.LogFilePath <- $"""C:/temp/ionide-test/vstest-{System.DateTime.Now.ToString("yyyy-MM-dd-HH-mm")}.txt"""
-        // consoleParams.InheritEnvironmentVariables <- false
+    type TestRunHandler(_detailedOutput: bool) = 
+        member val TestResults : TestResult ResizeArray = ResizeArray() with get,set
 
-        let vstest = new VsTestConsoleWrapper(vstestPath, consoleParams)
-        let discoveryHandler = TestDiscoveryHandler(true)
-        let options = TestPlatformOptions()
-        options.CollectMetrics <- true
-        options.SkipDefaultAdapters <- false
+        interface ITestRunEventsHandler with
+            member _.HandleLogMessage (level: TestMessageLevel, message: string): unit = 
+                Console.WriteLine($"[{level.ToString().ToUpper(CultureInfo.InvariantCulture)}]: {message}");
+                
 
-        let sessionHandler = TestSessionHandler()
+            member _.HandleRawMessage (rawMessage: string): unit = 
+                if (_detailedOutput) then
+                    Console.WriteLine($"[RUN.MESSAGE]: {rawMessage}");
+            
 
-        
-        vstest.DiscoverTests(sources, null, options, sessionHandler.TestSessionInfo, discoveryHandler)
-        discoveryHandler.DiscoveredTests
-        
+            member this.HandleTestRunComplete (testRunCompleteArgs: TestRunCompleteEventArgs, lastChunkArgs: TestRunChangedEventArgs, _runContextAttachments: System.Collections.Generic.ICollection<AttachmentSet>, _executorUris: System.Collections.Generic.ICollection<string>): unit = 
+                Console.WriteLine($"[RUN.COMPLETE]: err: {testRunCompleteArgs.Error}, lastChunk:")
+                if((not << isNull) lastChunkArgs && (not << isNull) lastChunkArgs.NewTestResults) then
+                    this.TestResults.AddRange(lastChunkArgs.NewTestResults)
+
+                if ((not << isNull) testRunCompleteArgs.TestRunStatistics && (not << isNull) testRunCompleteArgs.TestRunStatistics.Stats) then
+                    let outcomeDisplay = testRunCompleteArgs.TestRunStatistics.Stats |> Seq.map (fun outcome -> $"{outcome.Key}: {outcome.Value}") |> String.concat "; " 
+                    Console.WriteLine(outcomeDisplay);    
+                
+                if (_detailedOutput && (not << isNull) lastChunkArgs && (not << isNull) lastChunkArgs.NewTestResults) then 
+                    Console.WriteLine(Display.WriteTests(lastChunkArgs.NewTestResults |> Seq.map _.TestCase));
+                
+
+            member this.HandleTestRunStatsChange (testRunChangedArgs: TestRunChangedEventArgs): unit = 
+                if((not << isNull) testRunChangedArgs && (not << isNull) testRunChangedArgs.NewTestResults) then
+                    this.TestResults.AddRange(testRunChangedArgs.NewTestResults)
+
+                if (_detailedOutput && (not << isNull) testRunChangedArgs && (not << isNull) testRunChangedArgs.NewTestResults) then 
+                    Console.WriteLine($"[RUN.PROGRESS]");
+                    Console.WriteLine(Display.WriteTests(testRunChangedArgs.NewTestResults |> Seq.map _.TestCase));
+
+            member _.LaunchProcessWithDebuggerAttached (_testProcessStartInfo: TestProcessStartInfo): int = 
+                raise (System.NotImplementedException())
 
     open System
     open System.IO
@@ -143,8 +151,36 @@ module Program =
             // Path.Combine(sourceDir, "SampleTestProjects/VSTest.XUnit.Tests/bin/Debug/net8.0/VSTest.XUnit.Tests.dll")
             //"X:/source/dotnet/TestPlatform.Playground/VSTest.XUnit.Tests/bin/Debug/net9.0/VSTest.XUnit.Tests.dll"
         ]
+        let vstestPath = "C:/Program Files/dotnet/sdk/9.0.104/vstest.console.dll"
+        let consoleParams = ConsoleParameters()
+        consoleParams.EnvironmentVariables <- [
+              "VSTEST_CONNECTION_TIMEOUT", "999"
+              "VSTEST_DEBUG_NOBP", "1"
+              "VSTEST_RUNNER_DEBUG_ATTACHVS", "0"
+              "VSTEST_HOST_DEBUG_ATTACHVS", "0"
+              "VSTEST_DATACOLLECTOR_DEBUG_ATTACHVS", "0"
+        ] |> dict |> System.Collections.Generic.Dictionary<string, string>
+        consoleParams.LogFilePath <- $"""C:/temp/ionide-test/vstest-{System.DateTime.Now.ToString("yyyy-MM-dd-HH-mm")}.txt"""
+        // consoleParams.InheritEnvironmentVariables <- false
 
-        let discovered = discoverTests sources
+        let detailedOutput = true
+        let vstest = new VsTestConsoleWrapper(vstestPath, consoleParams)
+        let discoveryHandler = TestDiscoveryHandler(detailedOutput)
+        let options = TestPlatformOptions()
+        options.CollectMetrics <- true
+        options.SkipDefaultAdapters <- false
+
+        let sessionHandler = TestSessionHandler()
+
         
+        let sw = Stopwatch.StartNew()
+        vstest.DiscoverTests(sources, null, options, sessionHandler.TestSessionInfo, discoveryHandler)
+        let discovered = discoveryHandler.DiscoveredTests
+        
+        let discoveryDuration = sw.ElapsedMilliseconds
+        Console.WriteLine($"Discovery done in {discoveryDuration} ms")
         discovered |> Seq.map _.FullyQualifiedName |> String.concat Environment.NewLine |> printfn "Discovered: \n\n%s"
+
+        sw.Restart()
+        vstest.RunTests(discoveryHandler.DiscoveredTests, null, options, sessionHandler.TestSessionInfo, TestRunHandler(detailedOutput))
         0

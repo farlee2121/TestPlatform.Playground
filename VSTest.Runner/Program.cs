@@ -28,18 +28,18 @@ internal class Program
         var playgroundRoot = Path.GetFullPath(Path.Combine(binDir, "..", "..", ".."));
 
         //var console = @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\Extensions\TestPlatform\vstest.console.exe";
-        var console = "C:/Program Files/dotnet/sdk/9.0.201/vstest.console.dll";
+        var console = "C:/Program Files/dotnet/sdk/9.0.104/vstest.console.dll";
 
         var sources = new[] {
             Path.Combine(playgroundRoot, "..", "VSTest.XUnit.Tests", "bin", "Debug", "net9.0", "VSTest.XUnit.Tests.dll"),
-            Path.Combine(playgroundRoot, "..", "VSTest.NUnit.Tests", "bin", "Debug", "net9.0", "VSTest.NUnit.Tests.dll"),
-            Path.Combine(playgroundRoot, "..", "VSTest.Expecto.Tests", "bin", "Debug", "net8.0", "VSTest.Expecto.Tests.dll"),
-            Path.Combine(playgroundRoot, "..", "MTP.NUnit.Tests", "bin", "Debug", "net9.0", "MTP.NUnit.Tests.dll"),
-            Path.Combine(playgroundRoot, "..", "MTP.xUnit.Tests", "bin", "Debug", "net9.0", "MTP.xUnit.Tests.dll"),
-            Path.Combine(playgroundRoot, "..", "MTP.MSTest.Tests", "bin", "Debug", "net9.0", "MTP.MSTest.Tests.dll"),
-            Path.Combine(playgroundRoot, "..", "MTP.Expecto.Tests", "bin", "Debug", "net8.0", "MTP.Expecto.Tests.dll"),
-            // TUnit not discovered
-            Path.Combine(playgroundRoot, "..", "MTP.TUnit.Tests", "bin", "Debug", "net8.0", "MTP.TUnit.Tests.dll"),
+            //Path.Combine(playgroundRoot, "..", "VSTest.NUnit.Tests", "bin", "Debug", "net9.0", "VSTest.NUnit.Tests.dll"),
+            //Path.Combine(playgroundRoot, "..", "VSTest.Expecto.Tests", "bin", "Debug", "net8.0", "VSTest.Expecto.Tests.dll"),
+            //Path.Combine(playgroundRoot, "..", "MTP.NUnit.Tests", "bin", "Debug", "net9.0", "MTP.NUnit.Tests.dll"),
+            //Path.Combine(playgroundRoot, "..", "MTP.xUnit.Tests", "bin", "Debug", "net9.0", "MTP.xUnit.Tests.dll"),
+            //Path.Combine(playgroundRoot, "..", "MTP.MSTest.Tests", "bin", "Debug", "net9.0", "MTP.MSTest.Tests.dll"),
+            //Path.Combine(playgroundRoot, "..", "MTP.Expecto.Tests", "bin", "Debug", "net8.0", "MTP.Expecto.Tests.dll"),
+            //// TUnit not discovered
+            //Path.Combine(playgroundRoot, "..", "MTP.TUnit.Tests", "bin", "Debug", "net8.0", "MTP.TUnit.Tests.dll"),
         };
 
         // design mode
@@ -47,6 +47,7 @@ internal class Program
         var consoleOptions = new ConsoleParameters
         {
             EnvironmentVariables = EnvironmentVariables.Variables,
+            LogFilePath = $"C:/temp/ionide-test/playground-{System.DateTime.Now.ToString("yyyy-MM-dd-HH-mm")}.txt"
             // LogFilePath = Path.Combine(here, "logs", "log.txt"),
             // TraceLevel = TraceLevel.Verbose,
         };
