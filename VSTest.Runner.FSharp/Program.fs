@@ -2,11 +2,13 @@
 
 open System
 open System.Globalization
-open Microsoft.TestPlatform.VsTestConsole.TranslationLayer;
-open Microsoft.VisualStudio.TestPlatform.ObjectModel;
-open Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
-open Microsoft.VisualStudio.TestPlatform.ObjectModel.Client.Interfaces;
-open Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
+open Microsoft.TestPlatform.VsTestConsole.TranslationLayer
+open Microsoft.VisualStudio.TestPlatform.ObjectModel
+open Microsoft.VisualStudio.TestPlatform.ObjectModel.Client
+open Microsoft.VisualStudio.TestPlatform.ObjectModel.Client.Interfaces
+open Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging
+open Microsoft.VisualStudio.TestPlatform.ObjectModel.Utilities
+open Microsoft.VisualStudio.TestPlatform.Common.Filtering
 open System.Diagnostics
 
 module Program =
@@ -139,7 +141,7 @@ module Program =
         let playgroundRoot = __SOURCE_DIRECTORY__
         let sources = [
             Path.Combine(playgroundRoot, "..", "VSTest.XUnit.Tests", "bin", "Debug", "net9.0", "VSTest.XUnit.Tests.dll")
-            Path.Combine(playgroundRoot, "..", "VSTest.NUnit.Tests", "bin", "Debug", "net9.0", "VSTest.NUnit.Tests.dll")
+            //Path.Combine(playgroundRoot, "..", "VSTest.NUnit.Tests", "bin", "Debug", "net9.0", "VSTest.NUnit.Tests.dll")
             //Path.Combine(playgroundRoot, "..", "VSTest.Expecto.Tests", "bin", "Debug", "net8.0", "VSTest.Expecto.Tests.dll")
             //Path.Combine(playgroundRoot, "..", "MTP.NUnit.Tests", "bin", "Debug", "net9.0", "MTP.NUnit.Tests.dll")
             //Path.Combine(playgroundRoot, "..", "MTP.xUnit.Tests", "bin", "Debug", "net9.0", "MTP.xUnit.Tests.dll")
@@ -147,9 +149,6 @@ module Program =
             //Path.Combine(playgroundRoot, "..", "MTP.Expecto.Tests", "bin", "Debug", "net8.0", "MTP.Expecto.Tests.dll")
             //// TUnit not discovered
             //Path.Combine(playgroundRoot, "..", "MTP.TUnit.Tests", "bin", "Debug", "net8.0", "MTP.TUnit.Tests.dll")
-        
-            // Path.Combine(sourceDir, "SampleTestProjects/VSTest.XUnit.Tests/bin/Debug/net8.0/VSTest.XUnit.Tests.dll")
-            //"X:/source/dotnet/TestPlatform.Playground/VSTest.XUnit.Tests/bin/Debug/net9.0/VSTest.XUnit.Tests.dll"
         ]
         let vstestPath = "C:/Program Files/dotnet/sdk/9.0.104/vstest.console.dll"
         let consoleParams = ConsoleParameters()
@@ -169,6 +168,14 @@ module Program =
         let options = TestPlatformOptions()
         options.CollectMetrics <- true
         options.SkipDefaultAdapters <- false
+        let filterOptions = FilterOptions()
+        //filterOptions.FilterRegEx <- @"^[^\s\(]+"
+        options.FilterOptions <- filterOptions
+        //let filterExpression = "XUnitTests"
+        let filterExpression = "(FullyQualifiedName~XUnitTests)"
+        //let filterExpression = "Added"
+        //let filterExpression = "DisplayName~XUnitTests"
+        options.TestCaseFilter <- filterExpression
 
         let sessionHandler = TestSessionHandler()
 
@@ -182,9 +189,15 @@ module Program =
         discovered |> Seq.map _.FullyQualifiedName |> String.concat Environment.NewLine |> printfn "Discovered: \n\n%s"
 
         sw.Restart()
-        let runHandler = TestRunHandler(detailedOutput)
-        vstest.RunTests(discoveryHandler.DiscoveredTests, null, options, sessionHandler.TestSessionInfo, runHandler)
-        let testResults = runHandler.TestResults
-        Console.WriteLine($"Run Results: {Newtonsoft.Json.JsonConvert.SerializeObject(testResults)}")
 
+        let runHandler = TestRunHandler(detailedOutput)
+        vstest.RunTests(sources, null, options, sessionHandler.TestSessionInfo, runHandler)
+        let testResults = runHandler.TestResults
+
+        let parsedFilter = TestCaseFilterExpression(FilterExpressionWrapper(filterExpression))
+        let doesMatchFilter (t: TestCase) : bool=
+            parsedFilter.MatchTestCase(t, fun _ -> t.FullyQualifiedName)
+        let filtered = testResults |> Seq.filter (_.TestCase >> doesMatchFilter)
+        Console.WriteLine($"Match filter: {filtered |> Seq.length} ")
+        Console.WriteLine($"COMPLETED: Ran {testResults.Count} tests")
         0
